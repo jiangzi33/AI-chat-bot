@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class McpContextManager {
 
-    @Value("${openai.max-message-size}")
+    @Value("${spring.ai.openai.max-message-size}")
     private Integer maxMessageSize;
 
     // 内存存储：sessionId -> 对话消息列表
