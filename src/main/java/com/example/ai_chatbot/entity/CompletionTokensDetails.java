@@ -1,5 +1,8 @@
 package com.example.ai_chatbot.entity;
 
+import lombok.Builder;
+
+@Builder
 public class CompletionTokensDetails {
     private Integer reasoning_tokens;
 

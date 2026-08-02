@@ -1,5 +1,8 @@
 package com.example.ai_chatbot.entity;
 
+import lombok.Builder;
+
+@Builder
 public class Choice {
     private Integer index;
 

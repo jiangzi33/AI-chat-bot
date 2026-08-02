@@ -1,8 +1,11 @@
 package com.example.ai_chatbot.entity;
 
 
+import lombok.Builder;
+
 import java.util.List;
 
+@Builder
 public class OpenAIChatResponse {
     private String id;
 

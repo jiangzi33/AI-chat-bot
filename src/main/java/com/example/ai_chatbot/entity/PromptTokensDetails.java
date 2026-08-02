@@ -1,5 +1,8 @@
 package com.example.ai_chatbot.entity;
 
+import lombok.Builder;
+
+@Builder
 public class PromptTokensDetails {
     private Integer cached_tokens;
     private Integer audio_tokens;
