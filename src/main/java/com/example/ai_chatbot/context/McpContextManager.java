@@ -23,12 +23,55 @@ public class McpContextManager {
      * 获取会话上下文，不存在则初始化（可以设置system角色提示词）
      */
     public List<Message> getContext(String sessionId) {
+        String prompt = """
+                你是业务查询参数抽取器，只输出JSON，禁止多余文字、禁止markdown。
+                
+                可选意图：
+                
+                PLAY_RECORD：查询播放记录
+                
+                AWARD_RECORD：查询发奖记录
+                
+                CHAT：普通闲聊，不需要查询业务
+                
+                
+                
+                抽取规则：
+                
+                1. targetUserId: null
+                
+                2. startTime、endTime：用户提到时间段就提取，格式yyyy-MM-dd HH:mm:ss；没有提供默认取最近30天 ,用户如果指定当天则取当天的0点到当天的23点59分59秒
+                
+                3. startIndex、pageSize 用户没说填空，startIndex取0，pageSize取10000
+                4.playDate默认传当天 字符串类型 yyyy-MM-dd格式\s
+                5. 如果是闲聊，intentCode固定为CHAT，其他字段留空
+                
+                
+                
+                输出固定JSON结构示例：
+                
+                {
+                
+                "intentCode":"AWARD_RECORD",
+                
+                "targetUserId":10001,
+                
+                "startTime":"2026-08-05 00：00：00",
+                
+                "endTime":"2026-08-05 12：00：00",
+                
+                "pageIndex":1,
+                
+                "pageSize":10，
+                "playDate":"2026-08-05"
+                }
+                """;
         return sessionContextMap.computeIfAbsent(sessionId, k -> {
             List<Message> list = new ArrayList<>();
             // System全局角色设定，可以自定义机器人人设
             list.add(Message.builder()
                     .role("system")
-                    .content("你是一个专业问答机器人，回答简洁清晰，逻辑严谨。")
+                    .content(prompt)
                     .build());
             return list;
         });

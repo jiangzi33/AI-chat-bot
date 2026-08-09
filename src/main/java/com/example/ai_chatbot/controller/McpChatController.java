@@ -20,7 +20,7 @@ public class McpChatController {
     @PostMapping("/ask")
     public Result<String> ask(String sessionId, String question, int userId) {
         try {
-            String reply = chatBotService.chat(sessionId,question);
+            String reply = chatBotService.chat(sessionId,question,userId);
             return Result.success(reply);
         } catch (Exception e) {
             e.printStackTrace();
