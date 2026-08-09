@@ -22,6 +22,8 @@ public class McpChatBotService {
     private ObjectMapper objectMapper;
     @Autowired
     private AIChatBotIntegration aiChatBotIntegration;
+    @Autowired
+    private RecognizeConverterService recognizeConverterService;
 
     /**
      * MCP多轮对话
@@ -48,11 +50,16 @@ public class McpChatBotService {
         BizCondition bizCondition = objectMapper.readValue(answer, BizCondition.class);
         bizCondition.setTargetUserId(userId);
         if(bizCondition.getIntentCode().equals("PLAY_RECORD")){
-            List<PlayRecordVO> playRecordVOS = aiChatBotIntegration.queryPlayRecordList(bizCondition.getTargetUserId(), bizCondition.getStartTime(), bizCondition.getEndTime(), bizCondition.getPageIndex(), bizCondition.getPageSize());
+            List<PlayRecordVO> playRecordVOS = aiChatBotIntegration.queryPlayRecordList(bizCondition.getTargetUserId(), bizCondition.getStartTime(), bizCondition.getEndTime(), bizCondition.getStartIndex(), bizCondition.getPageSize());
+            String jsonResult = objectMapper.writeValueAsString(playRecordVOS);
+            return recognizeConverterService.converter(question,jsonResult);
         } else if(bizCondition.getIntentCode().equals("AWARD_RECORD")){
             List<PrizeRecordVO> prizeRecordVOS = aiChatBotIntegration.queryPrizeRecordList(bizCondition.getTargetUserId(), bizCondition.getStartTime(), bizCondition.getEndTime());
+            String jsonResult = objectMapper.writeValueAsString(prizeRecordVOS);
+            return recognizeConverterService.converter(question,jsonResult);
+        } else {
+            return answer;
         }
-        return answer;
     }
 
     /**

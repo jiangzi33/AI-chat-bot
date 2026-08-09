@@ -56,14 +56,14 @@ public class McpContextManager {
                 
                 "targetUserId":10001,
                 
-                "startTime":"2026-08-05 00：00：00",
+                "startTime":"2026-08-09 00：00：00",
                 
-                "endTime":"2026-08-05 12：00：00",
+                "endTime":"2026-08-09 12：00：00",
                 
-                "pageIndex":1,
+                "startIndex":1,
                 
                 "pageSize":10，
-                "playDate":"2026-08-05"
+                "playDate":"2026-08-09"
                 }
                 """;
         return sessionContextMap.computeIfAbsent(sessionId, k -> {

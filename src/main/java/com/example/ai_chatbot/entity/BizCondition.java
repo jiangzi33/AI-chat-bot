@@ -5,19 +5,19 @@ public class BizCondition {
     private Integer targetUserId;
     private String startTime;
     private String endTime;
-    private Integer pageIndex;
+    private Integer startIndex;
     private Integer pageSize;
     private String playDate;
 
     public BizCondition() {
     }
 
-    public BizCondition(String intentCode, Integer targetUserId, String startTime, String endTime, Integer pageIndex, Integer pageSize, String playDate) {
+    public BizCondition(String intentCode, Integer targetUserId, String startTime, String endTime, Integer startIndex, Integer pageSize, String playDate) {
         this.intentCode = intentCode;
         this.targetUserId = targetUserId;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.pageIndex = pageIndex;
+        this.startIndex = startIndex;
         this.pageSize = pageSize;
         this.playDate = playDate;
     }
@@ -54,12 +54,12 @@ public class BizCondition {
         this.endTime = endTime;
     }
 
-    public Integer getPageIndex() {
-        return pageIndex;
+    public Integer getStartIndex() {
+        return startIndex;
     }
 
-    public void setPageIndex(Integer pageIndex) {
-        this.pageIndex = pageIndex;
+    public void setStartIndex(Integer startIndex) {
+        this.startIndex = startIndex;
     }
 
     public Integer getPageSize() {
