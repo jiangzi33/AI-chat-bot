@@ -1,10 +1,10 @@
 package com.example.ai_chatbot.controller;
 
+import com.example.ai_chatbot.agent.MusicAgent;
 import com.example.ai_chatbot.controller.vo.Result;
 import com.example.ai_chatbot.service.McpChatBotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class McpChatController {
     @Autowired
     private McpChatBotService chatBotService;
+    @Autowired
+    private MusicAgent musicAgent;
 
     /**
      * MCP问答接口
@@ -20,7 +22,7 @@ public class McpChatController {
     @PostMapping("/ask")
     public Result<String> ask(String sessionId, String question, int userId) {
         try {
-            String reply = chatBotService.chat(sessionId,question,userId);
+            String reply = musicAgent.chat(sessionId,question,userId);
             return Result.success(reply);
         } catch (Exception e) {
             e.printStackTrace();
