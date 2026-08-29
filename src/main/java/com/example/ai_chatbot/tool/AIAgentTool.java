@@ -1,8 +1,11 @@
 package com.example.ai_chatbot.tool;
 
 import com.example.ai_chatbot.integration.AIChatBotIntegration;
+import com.example.ai_chatbot.integration.cmd.MusicCmd;
 import com.example.ai_chatbot.integration.vo.PlayRecordVO;
 import com.example.ai_chatbot.integration.vo.PrizeRecordVO;
+import com.example.ai_chatbot.integration.vo.SingleSystemConfigVO;
+import com.example.ai_chatbot.integration.vo.SystemConfigVO;
 import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
@@ -36,5 +39,27 @@ public class AIAgentTool {
                                                 @ToolParam(description = "要查询的发奖开始时间,当用户指定某一天默认使用这一天的00:00:00作为开始时间")String startTime,
                                                 @ToolParam(description = "要查询的发奖结束时间，当用户未指定结束时间时，默认使用当前时间")String endTime){
         return aiChatBotIntegration.queryPrizeRecordList((Integer) toolContext.getContext().get("userId"),startTime,endTime);
+    }
+
+    @Tool(name = "querySystemConfigByCode",description = "当需要查询用户提出一些模糊问题的时候，例如：“我今天奖励为什么发放不对？”，进行调用去核实当前系统发放奖励的规则")
+    public SystemConfigVO querySystemConfigByCode(@ToolParam(description = "需要查询奖品对应的code,code的可选范围为stage和amount,其中stage为播放总时长和发奖阶段的映射关系，amount为播放总时长和发奖数量的映射关系")String code){
+        return aiChatBotIntegration.querySystemConfigByCode(code);
+    }
+
+    @Tool(name = "addMusic", description = "当用户需要添加音乐的时候调用")
+    public void addMusic(@ToolParam(description = "音乐内容")String content,
+                         @ToolParam(description = "音乐标题") String title,
+                         @ToolParam(description = "音乐作者") String author,
+                         @ToolParam(description = "音乐标签") String tags,
+                         @ToolParam(description = "音乐封面url，默认为空")String pictureUrl,
+                         @ToolParam(description = "音乐音频url")String audioUrl){
+        MusicCmd cmd = new MusicCmd();
+        cmd.setContent(content);
+        cmd.setTitle(title);
+        cmd.setAuthor(author);
+        cmd.setTags(tags);
+        cmd.setPictureUrl(pictureUrl);
+        cmd.setAudioUrl(audioUrl);
+        aiChatBotIntegration.addMusic(cmd);
     }
 }

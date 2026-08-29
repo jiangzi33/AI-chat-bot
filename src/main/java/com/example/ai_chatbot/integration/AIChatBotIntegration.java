@@ -1,9 +1,13 @@
 package com.example.ai_chatbot.integration;
 
+import com.example.ai_chatbot.controller.vo.BaseVO;
 import com.example.ai_chatbot.exception.AcrossSysException;
+import com.example.ai_chatbot.integration.cmd.MusicCmd;
 import com.example.ai_chatbot.integration.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -44,6 +48,26 @@ public class AIChatBotIntegration {
         return multiCoinRecordVOResponseEntity.getBody().getCoinRecordVOList();
     }
 
+    public SystemConfigVO querySystemConfigByCode(String code){
+        String url = String.format("http://127.0.0.1:8082/systemConfig/query?code=%s",code);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        ResponseEntity<SingleSystemConfigVO>  singleSystemConfigVOResponseEntity = restTemplate.getForEntity(url, SingleSystemConfigVO.class);
+        if(!singleSystemConfigVOResponseEntity.getBody().getBaseVO().isSuccess() || singleSystemConfigVOResponseEntity.getBody().getBaseVO().getCode()!=200){
+            throw new AcrossSysException("acrossing system is fail");
+        }
+        return singleSystemConfigVOResponseEntity.getBody().getSystemConfigVO();
+    }
+
+    public void addMusic(MusicCmd cmd){
+        String url = "http://127.0.0.1:8082/music/add";
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<MusicCmd> playRecordCmdHttpEntity = new HttpEntity<>(cmd,httpHeaders);
+        ResponseEntity<BaseVO> baseVOResponseEntity = restTemplate.postForEntity(url, playRecordCmdHttpEntity, BaseVO.class);
+        if(!baseVOResponseEntity.getBody().isSuccess() || baseVOResponseEntity.getBody().getCode()!=200){
+            throw new AcrossSysException("acrossing system is fail");
+        }
+    }
 
 }
 
