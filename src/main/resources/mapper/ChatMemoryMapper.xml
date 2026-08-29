@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.ai_chatbot.mapper.ChatMemoryMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap"
+               type="com.example.ai_chatbot.entity.ChatMemory">
+
+        <id column="id" property="id"/>
+
+        <result column="session_id" property="sessionId"/>
+
+        <result column="from_user_id" property="fromUserId"/>
+
+        <result column="to_user_id" property="toUserId"/>
+
+        <result column="content" property="content"/>
+
+        <result column="chat_time" property="chatTime"/>
+
+    </resultMap>
+
+
+    <!-- 添加聊天记忆 -->
+    <insert id="addMemory">
+
+        INSERT INTO chat_memory
+        (
+        session_id,
+        from_user_id,
+        to_user_id,
+        content,
+        chat_time
+        )
+
+        VALUES
+        (
+        #{sessionId},
+        #{fromUserId},
+        #{toUserId},
+        #{content},
+        NOW()
+        )
+
+    </insert>
+
+
+    <!-- 根据ID删除聊天记忆 -->
+    <delete id="deleteMemory">
+
+        DELETE
+        FROM chat_memory
+        WHERE id = #{id}
+
+    </delete>
+
+
+    <!-- 根据sessionId查询聊天记录 -->
+    <select id="queryBySessionId"
+            resultMap="BaseResultMap">
+
+        SELECT *
+        FROM chat_memory
+        WHERE session_id = #{sessionId}
+        ORDER BY chat_time ASC
+
+    </select>
+
+</mapper>

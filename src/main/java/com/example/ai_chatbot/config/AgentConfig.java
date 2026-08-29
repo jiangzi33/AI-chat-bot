@@ -23,7 +23,7 @@ public class AgentConfig {
      * @Param ChatClient：和大模型交流的客户端构造器。
      * @Param AIAgentTool：提供给 AI 使用的 Java 函数集合。（及我们给ai使用的工具）
      * @Param ToolCallingManager：工具调用调度器
-     * @Param ChatMemory：上下文记忆
+     * @Param ChatMemoryMapper：上下文记忆
      * @Param music-agent.max-iterations:10 ： 大模型思考轮数为10次
      */
     public MusicAgent musicAgent(
