@@ -1,8 +1,10 @@
 package com.example.ai_chatbot.controller.vo;
 
+import java.util.List;
+
 public class MultiChatMemoryVO {
     private BaseVO baseVO;
-    private MultiChatMemoryVO multiChatMemoryVO;
+    private List<ChatMemoryVO> chatMemoryVOList;
 
     public BaseVO getBaseVO() {
         return baseVO;
@@ -12,11 +14,11 @@ public class MultiChatMemoryVO {
         this.baseVO = baseVO;
     }
 
-    public MultiChatMemoryVO getMultiChatMemoryVO() {
-        return multiChatMemoryVO;
+    public List<ChatMemoryVO> getChatMemoryVOList() {
+        return chatMemoryVOList;
     }
 
-    public void setMultiChatMemoryVO(MultiChatMemoryVO multiChatMemoryVO) {
-        this.multiChatMemoryVO = multiChatMemoryVO;
+    public void setChatMemoryVOList(List<ChatMemoryVO> chatMemoryVOList) {
+        this.chatMemoryVOList = chatMemoryVOList;
     }
 }

@@ -61,7 +61,7 @@ public class ChatMemoryController {
             List<ChatMemoryVO> chatMemoryVOList = ChatMemoryConverter.convertList(chatMemories);
             endTime = System.currentTimeMillis();
             BaseVO baseVO = BaseVO.buildBaseVO(200, true, endTime - startTime, null);
-            multiChatMemoryVO.setMultiChatMemoryVO(multiChatMemoryVO);
+            multiChatMemoryVO.setChatMemoryVOList(chatMemoryVOList);
             multiChatMemoryVO.setBaseVO(baseVO);
             return multiChatMemoryVO;
         } catch (Exception e) {
