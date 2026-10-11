@@ -8,7 +8,7 @@ import com.example.ai_chatbot.integration.vo.PlayRecordVO;
 import com.example.ai_chatbot.integration.vo.PrizeRecordVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 

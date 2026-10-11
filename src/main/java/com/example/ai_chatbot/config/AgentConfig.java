@@ -57,7 +57,8 @@ public class AgentConfig {
                 """)
                 //添加指定调用大模型的默认参数，比如：temperature，model，maxTokens，parallelToolCalls
                 .defaultOptions(OpenAiChatOptions.builder()
-                        .parallelToolCalls(true))
+                        .parallelToolCalls(true)
+                        .build())
                 //默认的工具集
                 .defaultTools(aiAgentTool)
                 //默认建议器用于指定上下文记忆建议器，工具调用记忆器

@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClientRequest;
 import org.springframework.ai.chat.client.ChatClientResponse;
-import org.springframework.ai.chat.client.advisor.ToolCallingAdvisor;
+import org.springframework.ai.chat.client.advisor.DefaultAroundAdvisorChain;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
+import org.springframework.ai.chat.client.advisor.api.CallAdvisor;
 import org.springframework.ai.chat.client.advisor.api.CallAdvisorChain;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
@@ -19,19 +21,35 @@ import org.springframework.util.Assert;
 
 import java.util.List;
 
-public class DetailedToolCallingAdvisor extends ToolCallingAdvisor {
+/**
+ * 多轮 Tool Calling 的 Advisor（Spring AI 1.0 没有内置的 ToolCallingAdvisor，这里自己实现）。
+ * 排在 MessageChatMemoryAdvisor 之后，这样记忆只保存用户问题和最终回答，不会每轮重复写入。
+ */
+public class DetailedToolCallingAdvisor implements CallAdvisor {
 
     private static final Logger log = LoggerFactory.getLogger(DetailedToolCallingAdvisor.class);
+
+    private static final int ORDER = Advisor.DEFAULT_CHAT_MEMORY_PRECEDENCE_ORDER + 100;
+
+    private final ToolCallingManager toolCallingManager;
 
     private final int maxIterations;
 
     public DetailedToolCallingAdvisor(ToolCallingManager toolCallingManager, int maxIterations) {
-        super(toolCallingManager,
-                chatResponse -> chatResponse != null && chatResponse.hasToolCalls(),
-                DEFAULT_ORDER,
-                true);
+        Assert.notNull(toolCallingManager, "toolCallingManager must not be null");
         Assert.isTrue(maxIterations > 0, "maxIterations must be greater than 0");
+        this.toolCallingManager = toolCallingManager;
         this.maxIterations = maxIterations;
+    }
+
+    @Override
+    public String getName() {
+        return "DetailedToolCallingAdvisor";
+    }
+
+    @Override
+    public int getOrder() {
+        return ORDER;
     }
 
     @Override
@@ -39,9 +57,13 @@ public class DetailedToolCallingAdvisor extends ToolCallingAdvisor {
         Assert.notNull(request, "request must not be null");
         Assert.notNull(chain, "chain must not be null");
 
-        if (!(request.prompt().getOptions() instanceof ToolCallingChatOptions options)) {
+        if (!(request.prompt().getOptions() instanceof ToolCallingChatOptions requestOptions)) {
             return chain.nextCall(request);
         }
+
+        // 关掉模型内部的自动工具执行，由本 Advisor 逐轮执行工具，才能打印每轮过程并限制轮次
+        ToolCallingChatOptions options = requestOptions.copy();
+        options.setInternalToolExecutionEnabled(false);
 
         List<Message> instructions = request.prompt().getInstructions();
 
@@ -53,7 +75,7 @@ public class DetailedToolCallingAdvisor extends ToolCallingAdvisor {
                     .context(request.context())
                     .build();
 
-            ChatClientResponse clientResponse = chain.copy(this).nextCall(iterationRequest);
+            ChatClientResponse clientResponse = downstreamChain(chain).nextCall(iterationRequest);
             ChatResponse chatResponse = clientResponse.chatResponse();
             Assert.notNull(chatResponse, "chatResponse must not be null");
 
@@ -90,6 +112,19 @@ public class DetailedToolCallingAdvisor extends ToolCallingAdvisor {
         }
 
         throw new IllegalStateException("Unexpected end of HelloAgent iteration loop");
+    }
+
+    /**
+     * Spring AI 1.0 的 advisor 链每调用一次 nextCall 就会消耗一个节点，不能在同一条链上重复调用。
+     * 这里每一轮都用排在本 Advisor 之后的 advisor（最终是调用模型的 ChatModelCallAdvisor）重新建一条链。
+     */
+    private CallAdvisorChain downstreamChain(CallAdvisorChain chain) {
+        List<CallAdvisor> downstream = chain.getCallAdvisors().stream()
+                .filter(advisor -> advisor.getOrder() > this.getOrder())
+                .toList();
+        return DefaultAroundAdvisorChain.builder(chain.getObservationRegistry())
+                .pushAll(downstream)
+                .build();
     }
 
     private void printModelResponse(ChatResponse chatResponse) {
